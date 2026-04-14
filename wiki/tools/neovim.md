@@ -36,15 +36,14 @@ vim.opt.shiftwidth = 4          -- 缩进宽度
 vim.opt.expandtab = true        -- 使用空格代替 Tab
 ```
 
-### 插件管理器配置示例
+### 使用 `vim.pack` 管理插件
 
 ```lua
--- 使用 packer.nvim
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'  -- 插件管理器自身
-  use 'folke/which-key.nvim'    -- 键位提示
-  use 'nvim-treesitter/nvim-treesitter'  -- 语法高亮
-end)
+vim.pack.add({
+  'https://github.com/nvim-treesitter/nvim-treesitter',
+  'https://github.com/ibhagwan/fzf-lua',
+  'https://github.com/nvim-lualine/lualine.nvim',
+})
 ```
 
 ## 核心配置项
@@ -95,16 +94,16 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- 常用映射
-vim.keymap.set('n', '<leader>ff', ':Telescope find_files<CR>')
-vim.keymap.set('n', '<leader>fg', ':Telescope live_grep<CR>')
+vim.keymap.set('n', '<leader>ff', '<cmd>FzfLua files<CR>')
+vim.keymap.set('n', '<leader>fg', '<cmd>FzfLua live_grep<CR>')
 ```
 
 ## 依赖与集成
 
 - **Treesitter**：语法高亮和代码分析
 - **LSP**：语言服务器协议支持
-- **Telescope**：模糊查找器
-- **Which-key**：键位提示
+- **fzf-lua**：模糊查找
+- **lualine.nvim**：状态栏展示
 
 ## 已知问题 / 注意事项
 

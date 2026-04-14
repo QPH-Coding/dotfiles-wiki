@@ -96,15 +96,15 @@ local plugins = vim.pack.get()
 -- 在 init.lua 中添加插件
 vim.pack.add({
   'https://github.com/nvim-treesitter/nvim-treesitter',
-  'https://github.com/nvim-lua/plenary.nvim',
-  { src = 'https://github.com/nvim-telescope/telescope.nvim', version = 'main' }
+  'https://github.com/ibhagwan/fzf-lua',
+  { src = 'https://github.com/nvim-lualine/lualine.nvim', version = 'master' }
 })
 ```
 
 ### 自定义辅助函数
 ```lua
 local gh = function(x) return 'https://github.com/' .. x end
-vim.pack.add({ gh('folke/lazy.nvim'), gh('nvim-lualine/lualine.nvim') })
+vim.pack.add({ gh('nvim-treesitter/nvim-treesitter'), gh('nvim-lualine/lualine.nvim') })
 ```
 
 ### Git 别名配置

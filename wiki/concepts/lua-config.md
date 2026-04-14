@@ -148,15 +148,12 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 ### 延迟加载
 
 ```lua
--- 使用 packer.nvim 的延迟加载
-use {
-  'nvim-telescope/telescope.nvim',
-  cmd = 'Telescope',  -- 命令触发加载
-  keys = {'<leader>ff'},  -- 键位触发加载
-  config = function()
-    require('telescope').setup()
-  end
-}
+vim.pack.add({
+  {
+    src = 'https://github.com/ibhagwan/fzf-lua',
+    data = { keys = { '<leader>ff', '<leader>fg' } },
+  },
+})
 ```
 
 ### 条件加载

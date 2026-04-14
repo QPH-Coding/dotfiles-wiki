@@ -64,6 +64,16 @@
       "last_synced": "2026-04-14"
     },
     {
+      "name": "mason-nvim",
+      "category": "nvim-plugin",
+      "type": "github-dir",
+      "repo": "mason-org/mason.nvim",
+      "path": "doc",
+      "ref": "main",
+      "prefix": "raw/doc/neovim/plugin/mason-nvim",
+      "last_synced": "2026-04-14"
+    },
+    {
       "name": "nvim-treesitter",
       "category": "nvim-plugin",
       "type": "github-dir",

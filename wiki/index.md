@@ -36,8 +36,4 @@ _最后更新：2026-04-14_
 
 ## 我的配置
 
-- [[my-config/overview]] — 基于 Lua 的现代 Neovim 配置全景
-
-## 概览
-
-- [[overview]] — 开发环境生态全景（待创建）
+- [[my-config/overview]] — 当前仓库内实际提交的 Neovim 配置概览

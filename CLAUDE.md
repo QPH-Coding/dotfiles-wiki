@@ -1,17 +1,20 @@
-# Neovim Knowledge Wiki — CLAUDE.md
+# DotFile-Wiki — CLAUDE.md
 
-这是 LLM 操作本 wiki 的配置文件。本文档描述 wiki 的结构、约定和操作流程。
+这是 LLM 操作本仓库的配置文件。本文档描述仓库的结构、约定和操作流程。
 你（LLM）是 wiki 的唯一维护者；用户负责提供源材料、引导探索、审阅结果。
 
 ---
 
-## 1. Wiki 定位
+## 1. 仓库定位
 
-本 wiki 专为以下目标设计：
+本仓库服务于**开发环境配置管理与知识沉淀**，覆盖所有开发工具（Neovim、Zsh、WezTerm、Git、Tmux 等）。
 
-- 系统整理 Neovim 官方文档、插件文档、社区文章等知识
-- 形成结构化的持久知识库，随源材料积累持续增长
-- **首要消费者是 AI**（包括你自己在下次会话中）：内容必须结构化、精确、无歧义，方便 AI 快速定位和引用
+两大核心功能：
+
+1. **Dotfiles 管理** — 将各工具的配置文件统一存储并一键部署到系统目录
+2. **Wiki 知识库** — 系统整理工具文档、配置决策、操作流程，形成可持续增长的知识资产
+
+**首要消费者是 AI**（包括你自己在下次会话中）：内容必须结构化、精确、无歧义，方便 AI 快速定位和引用。
 
 Wiki 不是通用笔记本。每张页面都应该回答一个明确的问题，而不是流水账式堆砌信息。
 
@@ -20,71 +23,112 @@ Wiki 不是通用笔记本。每张页面都应该回答一个明确的问题，
 ## 2. 目录结构
 
 ```
-~/Documents/ObsidianNeovim/
-├── CLAUDE.md                  ← 本文件
-├── config/                    ← Neovim 配置源文件（部署到系统 nvim 目录）
-├── scripts/                   ← 维护脚本
-│   ├── subtrees.json          ← git subtree 配置（remote、prefix、branch）
-│   ├── sync_docs.py           ← 拉取所有 subtree 最新文档
-│   └── deploy_config.py       ← 将 config/ 部署到系统 nvim 目录
-├── raw/                       ← 原始源材料（只读，LLM 不修改）
-│   ├── docs/                  ← Neovim 官方文档（git subtree 维护）
-│   ├── plugins/               ← 插件 README / 官方文档（git subtree 维护）
-│   └── articles/              ← 博客文章、教程、讨论（手动存入）
-└── wiki/                      ← LLM 维护的知识库
-    ├── index.md               ← 总目录（每次 ingest 后更新）
-    ├── log.md                 ← 操作日志（只追加）
-    ├── overview.md            ← Neovim 生态全景概述
-    ├── plugins/               ← 插件页（每个插件一个文件）
-    ├── concepts/              ← 概念页（LSP、Treesitter、Keymap 等）
-    ├── comparisons/           ← 对比与方案选型
-    ├── my-config/             ← 我的配置全景小结
-    └── slides/                ← Marp 幻灯片
+~/Documents/DotFile-Wiki/          ← 仓库根目录（原名 ObsidianNeovim）
+├── CLAUDE.md                      ← 本文件
+├── dotfiles/                      ← 各工具的配置源文件
+│   └── nvim/                      ← Neovim 配置（部署到系统 nvim 目录）
+├── scripts/                       ← 维护脚本
+│   ├── targets.json               ← 工具部署路径配置（跨平台）
+│   ├── deploy.py                  ← 部署 dotfiles/<tool>/ 到系统目录
+│   └── sync_docs.py               ← 下载 raw/ 目录中的外部文档
+├── raw/                           ← 原始源材料（只读，LLM 不修改）
+│   ├── manifest.json              ← 文档来源清单（版本/路径/来源，提交到 git）
+│   ├── docs/                      ← 官方文档（sync_docs.py 下载，gitignore）
+│   ├── tools/                     ← 工具文档（sync_docs.py 下载，gitignore）
+│   └── articles/                  ← 文章/博客（sync_docs.py 下载，gitignore）
+└── wiki/                          ← LLM 维护的知识库
+    ├── index.md                   ← 总目录（每次 ingest 后更新）
+    ├── log.md                     ← 操作日志（只追加）
+    ├── overview.md                ← 开发环境生态全景概述
+    ├── tools/                     ← 工具页（每个工具/插件一个文件）
+    ├── systems/                   ← 系统配置页（zsh、tmux、wezterm、git 等）
+    ├── workflows/                 ← 跨工具工作流与环境搭建指南
+    ├── concepts/                  ← 概念页（LSP、Treesitter、Shell 等）
+    ├── comparisons/               ← 对比与方案选型
+    ├── my-config/                 ← 我的配置全景小结
+    └── slides/                    ← Marp 幻灯片
 ```
 
 **规则**：
 - `raw/` 目录内容只读，LLM 读取但不修改
 - `wiki/` 目录由 LLM 全权维护：创建、更新、保持一致性
-- 页面文件名全小写 kebab-case，如 `lazy-nvim.md`、`lsp-basics.md`
+- `dotfiles/` 由用户维护，LLM 可读取用于生成 my-config 页面
+- 页面文件名全小写 kebab-case，如 `lazy-nvim.md`、`lsp-basics.md`、`zsh-config.md`
 
 ---
 
-## 3. 页面类型与模板
+## 3. 脚本说明
 
-### 3.1 插件页（`wiki/plugins/`）
+### 3.1 部署配置（deploy.py）
 
-一个插件对应一个文件，文件名为插件名（kebab-case）。
+```bash
+# 部署单个工具
+python scripts/deploy.py nvim
+
+# 部署所有工具
+python scripts/deploy.py all
+
+# 预览（不实际写入）
+python scripts/deploy.py nvim --dry-run
+python scripts/deploy.py all --dry-run
+```
+
+部署路径由 `scripts/targets.json` 配置，源目录为 `dotfiles/<tool>/`。
+
+### 3.2 同步文档（sync_docs.py）
+
+```bash
+# 同步所有来源
+python scripts/sync_docs.py
+
+# 只同步单个来源
+python scripts/sync_docs.py lazy-nvim
+
+# 更新某个来源的 ref（tag / branch / SHA）并立即同步
+python scripts/sync_docs.py --update lazy-nvim v11.17.0
+
+# 查看所有来源的当前版本与同步状态
+python scripts/sync_docs.py --list
+```
+
+来源清单见 `raw/manifest.json`（提交到 git）；下载内容在 `raw/docs/`、`raw/tools/`、`raw/articles/`（已 gitignore，按需重新下载）。
+
+---
+
+## 4. 页面类型与模板
+
+### 4.1 工具页（`wiki/tools/`）
+
+涵盖 Neovim 插件、命令行工具、开发辅助工具等。一个工具对应一个文件。
 
 ```markdown
 ---
-type: plugin
-name: <插件名，保留原始大小写>
-category: <分类，如 package-manager / lsp / ui / navigation / editor>
+type: tool
+name: <工具名，保留原始大小写>
+category: <分类，如 nvim-plugin / cli / package-manager / lsp / ui>
 repo: <GitHub repo，如 folke/lazy.nvim>
 sources: [<raw/ 下的源文件路径>]
 last-updated: <YYYY-MM-DD>
 ---
 
-# <插件名>
+# <工具名>
 
-> <一句话：这个插件解决什么问题>
+> <一句话：这个工具解决什么问题>
 
 ## 定位
 
-<2-3句：插件的核心功能与设计哲学>
+<2-3句：核心功能与设计哲学>
 
 ## 安装
 
-```lua
--- lazy.nvim 配置示例
-{ "<repo>", opts = {} }
+```bash / lua
+# 安装命令或配置示例
 ```
 
 ## 核心配置项
 
 | 配置项 | 类型 | 默认值 | 说明 |
 |--------|------|--------|------|
-| ...    | ...  | ...    | ...  |
 
 ## 常见用法
 
@@ -92,7 +136,7 @@ last-updated: <YYYY-MM-DD>
 
 ## 依赖与集成
 
-<与哪些插件有依赖关系或常见搭配>
+<与哪些工具有依赖关系或常见搭配>
 
 ## 已知问题 / 注意事项
 
@@ -101,12 +145,95 @@ last-updated: <YYYY-MM-DD>
 ## 参考
 
 - [[index]] 返回总目录
-- <内链到相关插件页或概念页>
+- <内链到相关工具页或概念页>
 ```
 
 ---
 
-### 3.2 概念页（`wiki/concepts/`）
+### 4.2 系统配置页（`wiki/systems/`）
+
+用于 OS 级别的工具配置：shell（zsh/bash）、终端（wezterm）、版本控制（git）、会话管理（tmux）等。
+
+```markdown
+---
+type: system
+name: <工具名>
+category: <分类，如 shell / terminal / vcs / session-manager>
+sources: [<raw/ 下的源文件路径>]
+last-updated: <YYYY-MM-DD>
+---
+
+# <工具名>
+
+> <一句话定位>
+
+## 配置文件位置
+
+| 系统 | 路径 |
+|------|------|
+| Windows | ... |
+| macOS/Linux | ... |
+
+## 核心配置
+
+<关键配置项说明，附代码示例>
+
+## 我的配置要点
+
+<个人配置中的关键决策和原因>
+
+## 常见任务
+
+<日常使用中最高频的操作>
+
+## 参考
+
+- [[index]]
+- <内链>
+```
+
+---
+
+### 4.3 工作流页（`wiki/workflows/`）
+
+跨工具的操作流程和环境搭建指南。
+
+```markdown
+---
+type: workflow
+name: <工作流名称>
+tools: [<涉及的工具列表>]
+sources: [<raw/ 下的源文件路径>]
+last-updated: <YYYY-MM-DD>
+---
+
+# <工作流名称>
+
+> <一句话：这个工作流解决什么场景>
+
+## 前提条件
+
+<需要哪些工具/配置已就绪>
+
+## 步骤
+
+1. <步骤一>
+2. <步骤二>
+...
+
+## 完整示例
+
+<端到端的操作示例>
+
+## 参考
+
+- [[index]]
+- <内链到相关工具页>
+```
+
+---
+
+### 4.4 概念页（`wiki/concepts/`）
 
 ```markdown
 ---
@@ -122,15 +249,15 @@ last-updated: <YYYY-MM-DD>
 
 ## 是什么
 
-<概念本身的解释，不依赖 Neovim>
+<概念本身的解释>
 
-## 在 Neovim 中的实现
+## 在开发环境中的应用
 
-<Neovim 如何实现或使用这个概念>
+<具体工具如何实现或使用这个概念>
 
-## 相关插件
+## 相关工具
 
-<链接到实现这一概念的插件页>
+<链接到实现这一概念的工具页>
 
 ## 配置要点
 
@@ -144,13 +271,13 @@ last-updated: <YYYY-MM-DD>
 
 ---
 
-### 3.3 对比 / 方案选型页（`wiki/comparisons/`）
+### 4.5 对比 / 方案选型页（`wiki/comparisons/`）
 
 ```markdown
 ---
 type: comparison
-topic: <对比主题，如 "自动补全插件选型">
-candidates: [<插件1>, <插件2>, ...]
+topic: <对比主题，如 "终端模拟器选型">
+candidates: [<工具1>, <工具2>, ...]
 recommendation: <推荐选项>
 last-updated: <YYYY-MM-DD>
 ---
@@ -159,17 +286,17 @@ last-updated: <YYYY-MM-DD>
 
 ## 候选方案
 
-| 维度     | <插件1> | <插件2> | <插件3> |
-|----------|---------|---------|---------|
-| 维护状态 | ...     | ...     | ...     |
-| 配置复杂度 | ...   | ...     | ...     |
-| 性能     | ...     | ...     | ...     |
-| 生态兼容 | ...     | ...     | ...     |
-| 文档质量 | ...     | ...     | ...     |
+| 维度       | <工具1> | <工具2> | <工具3> |
+|------------|---------|---------|---------|
+| 维护状态   | ...     | ...     | ...     |
+| 配置复杂度 | ...     | ...     | ...     |
+| 性能       | ...     | ...     | ...     |
+| 跨平台     | ...     | ...     | ...     |
+| 文档质量   | ...     | ...     | ...     |
 
 ## 推荐
 
-**推荐：<插件名>**
+**推荐：<工具名>**
 
 理由：<具体原因>
 
@@ -178,12 +305,12 @@ last-updated: <YYYY-MM-DD>
 ## 参考
 
 - [[index]]
-- <内链到各插件页>
+- <内链到各工具页>
 ```
 
 ---
 
-### 3.4 我的配置全景小结（`wiki/my-config/`）
+### 4.6 我的配置全景小结（`wiki/my-config/`）
 
 ```markdown
 ---
@@ -191,23 +318,21 @@ type: my-config
 last-updated: <YYYY-MM-DD>
 ---
 
-# 我的 Neovim 配置全景
+# 我的开发环境配置全景
 
 ## 整体架构
 
-<描述配置的组织方式，如目录结构、加载顺序>
+<描述配置的整体组织方式>
 
-## 插件选择一览
+## 工具选择一览
 
-| 模块         | 选用插件       | 备注 |
-|--------------|----------------|------|
-| 包管理       | lazy.nvim      | ...  |
-| LSP          | ...            | ...  |
-| 补全         | ...            | ...  |
-| 文件树       | ...            | ...  |
-| 模糊搜索     | ...            | ...  |
-| 状态栏       | ...            | ...  |
-| 主题         | ...            | ...  |
+| 模块       | 选用工具     | 备注 |
+|------------|--------------|------|
+| 编辑器     | Neovim       | ...  |
+| 终端       | WezTerm      | ...  |
+| Shell      | Zsh          | ...  |
+| 版本控制   | Git          | ...  |
+| 会话管理   | Tmux         | ...  |
 
 ## 关键配置决策
 
@@ -224,34 +349,35 @@ last-updated: <YYYY-MM-DD>
 
 ---
 
-## 4. 操作流程
+## 5. 操作流程
 
-### 4.1 Ingest（摄入新源材料）
+### 5.1 Ingest（摄入新源材料）
 
 **触发**：用户说「处理这个文件」或「ingest raw/...」
 
 **流程（半自动）**：
 1. 读取源文件（`raw/` 下）
 2. 提取关键信息，向用户汇报：
-   - 这是什么内容
+   - 这是什么内容（工具文档 / 概念 / 配置参考）
    - 将影响哪些 wiki 页面（新建/更新）
    - 有无与现有 wiki 内容矛盾的地方
 3. **等待用户确认或调整方向**
 4. 执行写入：
-   - 创建或更新相关插件页/概念页
+   - 创建或更新相关工具页 / 系统页 / 概念页
    - 如涉及方案选型，更新或创建对比页
+   - 如涉及工作流，更新或创建工作流页
    - 如涉及我的配置，更新 `my-config/`
    - 更新 `wiki/index.md`
    - 追加 `wiki/log.md` 条目
 5. 汇报本次修改了哪些文件
 
-**原则**：一次 ingest 可能触及 5-15 个 wiki 页面。宁可多更新不要漏更新。
+**原则**：一次 ingest 可能触及多个 wiki 页面。宁可多更新不要漏更新。
 
 ---
 
-### 4.2 Query（查询）
+### 5.2 Query（查询）
 
-**触发**：用户提问 Neovim 相关问题
+**触发**：用户提问开发环境相关问题
 
 **流程**：
 1. 读取 `wiki/index.md`，找到相关页面
@@ -261,14 +387,14 @@ last-updated: <YYYY-MM-DD>
 
 ---
 
-### 4.3 Lint（健康检查）
+### 5.3 Lint（健康检查）
 
 **触发**：用户说「lint wiki」或「检查 wiki 质量」
 
 **检查项**：
 - 孤儿页面（没有被任何页面链接的页）
 - 内容矛盾（不同页面对同一问题说法不一）
-- 缺失的概念页（被多次提及但没有独立页面）
+- 缺失的页面（被多次提及但没有独立页面）
 - 过时的信息（`last-updated` 超过 6 个月）
 - index.md 中有但实际不存在的页面
 - 实际存在但 index.md 未收录的页面
@@ -277,32 +403,32 @@ last-updated: <YYYY-MM-DD>
 
 ---
 
-## 5. 约定规则
+## 6. 约定规则
 
-### 5.1 语言
+### 6.1 语言
 
-- 插件名、配置 key、API 名称、代码：保持英文原文
+- 工具名、配置 key、API 名称、代码：保持英文原文
 - 概念解释、分析、决策理由：中文
 - 页面标题：如有通用中文译名则中英并列，如无则直接用英文
 
-### 5.2 内链格式
+### 6.2 内链格式
 
 - 使用 Obsidian 双链格式：`[[文件名]]` 或 `[[文件名|显示文字]]`
 - 链接路径相对于 wiki 根目录，不带扩展名
-- 示例：`[[plugins/lazy-nvim]]`、`[[concepts/lsp-basics|LSP 基础]]`
+- 示例：`[[tools/lazy-nvim]]`、`[[systems/zsh]]`、`[[concepts/lsp-basics|LSP 基础]]`
 
-### 5.3 YAML Frontmatter
+### 6.3 YAML Frontmatter
 
 每张页面必须有 frontmatter，至少包含 `type` 和 `last-updated`。
-`type` 取值：`plugin` / `concept` / `comparison` / `my-config` / `overview`
+`type` 取值：`tool` / `system` / `workflow` / `concept` / `comparison` / `my-config` / `overview`
 
-### 5.4 代码块
+### 6.4 代码块
 
-所有 Lua 代码块标注语言 ` ```lua `，Shell 命令标注 ` ```bash `。
+Lua 代码块标注 ` ```lua `，Shell 命令标注 ` ```bash `，其余语言同理。
 
 ---
 
-## 6. index.md 维护规则
+## 7. index.md 维护规则
 
 `wiki/index.md` 是 LLM 查询时的导航入口，每次 ingest 后必须更新。
 
@@ -312,25 +438,39 @@ last-updated: <YYYY-MM-DD>
 
 _最后更新：YYYY-MM-DD_
 
-## 插件页
+## 工具页（Tools）
 
 | 页面 | 分类 | 一行摘要 |
 |------|------|----------|
-| [[plugins/lazy-nvim]] | package-manager | 现代 Neovim 插件管理器 |
-| ...  | ...  | ... |
+| [[tools/lazy-nvim]] | nvim-plugin | 现代 Neovim 插件管理器 |
+| ... | ... | ... |
 
-## 概念页
+## 系统配置页（Systems）
 
 | 页面 | 一行摘要 |
 |------|----------|
-| [[concepts/lsp-basics]] | Language Server Protocol 在 Neovim 中的实现 |
+| [[systems/zsh]] | Zsh 配置与插件管理 |
+| ... | ... |
+
+## 工作流（Workflows）
+
+| 页面 | 一行摘要 |
+|------|----------|
+| [[workflows/new-machine-setup]] | 新机器开发环境一键搭建流程 |
+| ... | ... |
+
+## 概念页（Concepts）
+
+| 页面 | 一行摘要 |
+|------|----------|
+| [[concepts/lsp-basics]] | Language Server Protocol 在编辑器中的实现 |
 | ... | ... |
 
 ## 对比 / 选型
 
 | 页面 | 主题 | 推荐 |
 |------|------|------|
-| ...  | ...  | ...  |
+| ... | ... | ... |
 
 ## 我的配置
 
@@ -338,12 +478,12 @@ _最后更新：YYYY-MM-DD_
 
 ## 概览
 
-- [[overview]] — Neovim 生态全景
+- [[overview]] — 开发环境生态全景
 ```
 
 ---
 
-## 7. log.md 维护规则
+## 8. log.md 维护规则
 
 `wiki/log.md` 只追加，不修改历史记录。
 
@@ -360,7 +500,7 @@ _最后更新：YYYY-MM-DD_
 
 ---
 
-## 8. Marp 幻灯片约定（`wiki/slides/`）
+## 9. Marp 幻灯片约定（`wiki/slides/`）
 
 当用户请求生成幻灯片时，文件存入 `wiki/slides/`，使用 Marp frontmatter：
 
@@ -380,9 +520,9 @@ paginate: true
 
 ---
 
-## 9. 首次初始化检查
+## 10. 首次初始化检查
 
 如果 `wiki/` 目录为空，在第一次 ingest 前先创建以下骨架文件：
-- `wiki/index.md`（空目录结构）
+- `wiki/index.md`（含 Tools / Systems / Workflows / Concepts / Comparisons / My Config / Overview 各节）
 - `wiki/log.md`（空日志，带标题）
 - `wiki/overview.md`（占位，待第一批源材料后填充）

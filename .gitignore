@@ -41,3 +41,8 @@ env/
 
 # ── Logs / temp ───────────────────────────────────────────────────────────────
 *.log
+
+# ── raw/ 文档目录（由 sync_docs.py 按需下载，manifest.json 除外）──────────────
+raw/doc/
+raw/tools/
+raw/articles/

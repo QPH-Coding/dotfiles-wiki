@@ -4,6 +4,39 @@
 
 ---
 
+## [2026-04-15] Config | 新增 Alacritty 配置模块
+
+- **操作**：config
+- **涉及文件**：
+  - dotfiles/alacritty/alacritty.toml
+  - scripts/targets.json
+  - wiki/log.md
+- **摘要**：基于仓库已同步的 Alacritty 0.17.0 官方配置文档，新增可部署的 `dotfiles/alacritty/` 模块，并补充基础可用的 `alacritty.toml` 与部署目标
+
+---
+
+## [2026-04-15] Update | 添加 Alacritty 配置文档来源
+
+- **操作**：update
+- **涉及文件**：
+  - raw/manifest.json
+  - wiki/log.md
+- **摘要**：新增 Alacritty 0.17.0 官方配置 HTML 页面到文档来源清单，采用 `url` 类型并固定到 release 版本链接，便于后续同步和写 wiki 时引用
+
+---
+
+## [2026-04-15] Cleanup | 移除 PackStatus 状态页
+
+- **操作**：cleanup
+- **涉及文件**：
+  - dotfiles/nvim/init.lua
+  - dotfiles/nvim/README.md
+  - dotfiles/nvim/lua/core/pack_status.lua (已删除)
+  - wiki/log.md
+- **摘要**：根据用户要求，移除了自定义 `:PackStatus` 命令和 `<leader>cp` 状态页入口，并清理了对应的说明文档
+
+---
+
 ## [2026-04-14] Ingest | Neovim 文档初始导入
 
 - **操作**：ingest

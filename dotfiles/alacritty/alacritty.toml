@@ -1,0 +1,37 @@
+[general]
+live_config_reload = true
+
+[window]
+padding = { x = 8, y = 6 }
+dynamic_padding = true
+opacity = 0.96
+startup_mode = "Windowed"
+
+[scrolling]
+history = 20000
+multiplier = 5
+
+[font]
+size = 12.0
+builtin_box_drawing = true
+
+[colors.primary]
+background = "#11141a"
+foreground = "#d6deeb"
+
+[colors.cursor]
+text = "CellBackground"
+cursor = "CellForeground"
+
+[selection]
+save_to_clipboard = true
+
+[cursor]
+style = { shape = "Beam", blinking = "Off" }
+unfocused_hollow = true
+
+[terminal]
+osc52 = "OnlyCopy"
+
+[mouse]
+hide_when_typing = true

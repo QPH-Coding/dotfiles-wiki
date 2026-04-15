@@ -1,4 +1,5 @@
 local M = {}
+local keymaps = require("core.keymaps")
 
 M.server_names = {
   "bashls",
@@ -6,6 +7,28 @@ M.server_names = {
   "pyright",
   "rust_analyzer",
 }
+
+local lsp_keymaps = {
+  { lhs = "gd", rhs = vim.lsp.buf.definition, desc = "Goto definition" },
+  { lhs = "gD", rhs = vim.lsp.buf.declaration, desc = "Goto declaration" },
+  { lhs = "gi", rhs = vim.lsp.buf.implementation, desc = "Goto implementation" },
+  { lhs = "gr", rhs = vim.lsp.buf.references, desc = "Goto references" },
+  { lhs = "K", rhs = vim.lsp.buf.hover, desc = "Hover" },
+  { lhs = "<leader>rn", rhs = vim.lsp.buf.rename, desc = "Rename symbol" },
+  { lhs = "<leader>ca", rhs = vim.lsp.buf.code_action, desc = "Code action" },
+  { lhs = "<leader>e", rhs = vim.diagnostic.open_float, desc = "Line diagnostics" },
+  { lhs = "[d", rhs = vim.diagnostic.goto_prev, desc = "Previous diagnostic" },
+  { lhs = "]d", rhs = vim.diagnostic.goto_next, desc = "Next diagnostic" },
+}
+
+keymaps.register("LSP", vim.tbl_map(function(mapping)
+  return {
+    mode = "n",
+    lhs = mapping.lhs,
+    desc = mapping.desc,
+    scope = "buffer-local",
+  }
+end, lsp_keymaps))
 
 function M.setup(capabilities)
   vim.diagnostic.config({
@@ -28,23 +51,13 @@ function M.setup(capabilities)
     group = augroup,
     desc = "LSP buffer-local keymaps",
     callback = function(event)
-      local map = function(lhs, rhs, desc)
-        vim.keymap.set("n", lhs, rhs, {
-          buffer = event.buf,
-          desc = desc,
+      local buffer_map = keymaps.buffer_mapper("LSP", event.buf)
+
+      for _, mapping in ipairs(lsp_keymaps) do
+        buffer_map("n", mapping.lhs, mapping.rhs, {
+          desc = mapping.desc,
         })
       end
-
-      map("gd", vim.lsp.buf.definition, "Goto definition")
-      map("gD", vim.lsp.buf.declaration, "Goto declaration")
-      map("gi", vim.lsp.buf.implementation, "Goto implementation")
-      map("gr", vim.lsp.buf.references, "Goto references")
-      map("K", vim.lsp.buf.hover, "Hover")
-      map("<leader>rn", vim.lsp.buf.rename, "Rename symbol")
-      map("<leader>ca", vim.lsp.buf.code_action, "Code action")
-      map("<leader>e", vim.diagnostic.open_float, "Line diagnostics")
-      map("[d", vim.diagnostic.goto_prev, "Previous diagnostic")
-      map("]d", vim.diagnostic.goto_next, "Next diagnostic")
     end,
   })
 

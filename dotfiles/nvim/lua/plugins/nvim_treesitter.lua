@@ -1,3 +1,5 @@
+local keymaps = require("core.keymaps")
+
 require("nvim-treesitter").setup({
   ensure_installed = {
     "bash",
@@ -28,4 +30,11 @@ require("nvim-treesitter").setup({
       node_decremental = "grm",
     },
   },
+})
+
+keymaps.register("Treesitter", {
+  { mode = "n", lhs = "gnn", desc = "Init selection", detail = "Incremental selection" },
+  { mode = "n", lhs = "grn", desc = "Expand to next node", detail = "Incremental selection" },
+  { mode = "n", lhs = "grc", desc = "Expand to current scope", detail = "Incremental selection" },
+  { mode = "n", lhs = "grm", desc = "Shrink selection", detail = "Incremental selection" },
 })

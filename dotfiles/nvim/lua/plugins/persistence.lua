@@ -1,9 +1,9 @@
+local map = require("core.keymaps").mapper("Persistence")
+
 require("persistence").setup({
   need = 1,
   branch = true,
 })
-
-local map = vim.keymap.set
 
 map("n", "<leader>qs", function()
   require("persistence").load()

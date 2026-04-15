@@ -13,7 +13,7 @@ opt.clipboard = "unnamedplus"
 opt.undofile = true
 opt.confirm = true
 opt.updatetime = 200
-opt.timeoutlen = 300
+opt.timeoutlen = 500
 
 -- Indentation defaults for the common case.
 opt.expandtab = true

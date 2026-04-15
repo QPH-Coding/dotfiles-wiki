@@ -1,3 +1,5 @@
+local map = require("core.keymaps").mapper("Bufferline")
+
 require("bufferline").setup({
   options = {
     diagnostics = "nvim_lsp",
@@ -13,8 +15,6 @@ require("bufferline").setup({
   },
 })
 
-local map = vim.keymap.set
-
-map("n", "<S-h>", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer" })
-map("n", "<S-l>", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer" })
+map("n", "<leader>bh", "<cmd>BufferLineCyclePrev<CR>", { desc = "Previous buffer" })
+map("n", "<leader>bl", "<cmd>BufferLineCycleNext<CR>", { desc = "Next buffer" })
 map("n", "<leader>bp", "<cmd>BufferLinePick<CR>", { desc = "Pick buffer" })

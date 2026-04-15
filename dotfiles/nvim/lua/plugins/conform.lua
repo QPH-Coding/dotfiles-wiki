@@ -1,3 +1,5 @@
+local map = require("core.keymaps").mapper("Conform")
+
 require("conform").setup({
   formatters_by_ft = {
     lua = { "stylua" },
@@ -20,7 +22,7 @@ require("conform").setup({
   notify_no_formatters = false,
 })
 
-vim.keymap.set("n", "<leader>f", function()
+map("n", "<leader>f", function()
   require("conform").format({
     async = true,
     lsp_format = "fallback",

@@ -6,7 +6,9 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
 require("core.options")
+require("core.keymaps").setup()
 require("core.editor")
+require("core.terminal").setup()
 
 vim.pack.add({
   "https://github.com/Saghen/blink.cmp",

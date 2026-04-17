@@ -1,8 +1,13 @@
 local M = {}
 local keymaps = require("core.keymaps")
+local default_flags = {
+  debounce_text_changes = 150,
+}
 
 M.server_names = {
   "bashls",
+  "clangd",
+  "gopls",
   "lua_ls",
   "pyright",
   "rust_analyzer",
@@ -63,6 +68,8 @@ function M.setup(capabilities)
 
   local servers = {
     bashls = {},
+    clangd = {},
+    gopls = {},
     lua_ls = {
       settings = {
         Lua = {},
@@ -91,16 +98,30 @@ function M.setup(capabilities)
             library = {
               vim.env.VIMRUNTIME,
             },
+            maxPreload = 500,
+            preloadFileSize = 200,
+          },
+          telemetry = {
+            enable = false,
           },
         })
       end,
     },
-    pyright = {},
+    pyright = {
+      settings = {
+        python = {
+          analysis = {
+            diagnosticMode = "openFilesOnly",
+          },
+        },
+      },
+    },
     rust_analyzer = {},
   }
 
   for name, config in pairs(servers) do
     local server_config = vim.deepcopy(config)
+    server_config.flags = vim.tbl_deep_extend("force", {}, default_flags, server_config.flags or {})
     server_config.capabilities = vim.tbl_deep_extend(
       "force",
       {},

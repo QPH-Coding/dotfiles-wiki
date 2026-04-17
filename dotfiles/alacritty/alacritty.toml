@@ -15,9 +15,33 @@ multiplier = 5
 size = 12.0
 builtin_box_drawing = true
 
+[font.normal]
+family = "Maple Mono NF CN"
+
+# Everforest dark medium, aligned with the current Neovim theme.
 [colors.primary]
-background = "#11141a"
-foreground = "#d6deeb"
+background = "#2d353b"
+foreground = "#d3c6aa"
+
+[colors.normal]
+black = "#475258"
+red = "#e67e80"
+green = "#a7c080"
+yellow = "#dbbc7f"
+blue = "#7fbbb3"
+magenta = "#d699b6"
+cyan = "#83c092"
+white = "#d3c6aa"
+
+[colors.bright]
+black = "#475258"
+red = "#e67e80"
+green = "#a7c080"
+yellow = "#dbbc7f"
+blue = "#7fbbb3"
+magenta = "#d699b6"
+cyan = "#83c092"
+white = "#d3c6aa"
 
 [colors.cursor]
 text = "CellBackground"

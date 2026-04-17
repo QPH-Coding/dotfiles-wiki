@@ -1,11 +1,12 @@
 # Wiki 总目录
 
-_最后更新：2026-04-14_
+_最后更新：2026-04-16_
 
 ## 工具页（Tools）
 
 | 页面 | 分类 | 一行摘要 |
 |------|------|----------|
+| [[tools/everforest]] | nvim-plugin | 柔和低对比的绿色系 Vim / Neovim 主题，支持 lualine 与 Tree-sitter |
 | [[tools/neovim]] | editor | 现代、可扩展的 Vim 编辑器，支持 Lua 配置和 LSP 集成 |
 | [[tools/vim-pack]] | nvim-core | Neovim 内置的现代化插件管理器，提供 Git 驱动的插件管理功能 |
 

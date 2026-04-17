@@ -19,9 +19,17 @@ map("n", "<leader>yp", function()
     return
   end
 
-  vim.fn.setreg("+", path)
   vim.fn.setreg('"', path)
-  vim.notify("Copied file path: " .. path)
+  local ok, err = pcall(vim.fn.setreg, "+", path)
+  if not ok then
+    vim.notify("Failed to copy file path to system clipboard: " .. err, vim.log.levels.ERROR)
+    return
+  end
+
+  vim.api.nvim_echo({
+    { "Copied file path: ", "None" },
+    { path, "String" },
+  }, false, {})
 end, { desc = "Yank file path" })
 
 vim.api.nvim_create_autocmd("TextYankPost", {

@@ -1,0 +1,27 @@
+comment = "部署目标配置文件。每个工具对应 dotfiles/<tool>/ 目录，部署到系统指定路径。"
+usage = "由 scripts/deploy.py 读取，执行: uv run scripts/deploy.py <tool> [--dry-run]"
+
+[targets.nvim]
+windows = '%LOCALAPPDATA%\nvim'
+unix = "~/.config/nvim"
+
+[targets.wezterm]
+windows = '%USERPROFILE%\.config\wezterm'
+unix = "~/.config/wezterm"
+
+[targets.alacritty]
+windows = '%APPDATA%\alacritty'
+unix = "~/.config/alacritty"
+
+[targets.zsh]
+unix = "~"
+
+[targets.bash]
+unix = "~"
+
+[targets.git]
+windows = "%USERPROFILE%"
+unix = "~"
+
+[targets.tmux]
+unix = "~"

@@ -17,6 +17,7 @@ dotfiles/nvim/
     └── plugins/
         ├── blink.lua
         ├── bufferline.lua
+        ├── everforest.lua
         ├── conform.lua
         ├── fzf_lua.lua
         ├── grug_far.lua
@@ -25,6 +26,7 @@ dotfiles/nvim/
         ├── mason_lspconfig.lua
         ├── nvim_lspconfig.lua
         ├── nvim_treesitter.lua
+        ├── oil.lua
         └── persistence.lua
 ```
 
@@ -44,6 +46,7 @@ dotfiles/nvim/
 
 - `Saghen/blink.cmp`
 - `akinsho/bufferline.nvim`
+- `sainnhe/everforest`
 - `MagicDuck/grug-far.nvim`
 - `mason-org/mason.nvim`
 - `mason-org/mason-lspconfig.nvim`
@@ -52,7 +55,29 @@ dotfiles/nvim/
 - `nvim-lualine/lualine.nvim`
 - `neovim/nvim-lspconfig`
 - `nvim-treesitter/nvim-treesitter`
+- `stevearc/oil.nvim`
 - `folke/persistence.nvim`
+
+## 主题
+
+默认主题为 `sainnhe/everforest`。
+
+- `lua/plugins/everforest.lua` 会在 `colorscheme everforest` 之前设置主题选项
+- 当前固定 `background=dark`、`everforest_background="medium"`
+- `everforest_better_performance = 1` 用于缩短主题加载时间
+- `everforest_show_eob = 0` 用于隐藏 EndOfBuffer 高亮
+- `lualine.nvim` 显式使用 `theme = "everforest"`
+
+## 文件浏览
+
+`oil.nvim` 现在接管目录 buffer，并作为当前配置的文件浏览器。
+
+- `lua/plugins/oil.lua` 负责 `oil.nvim` 的设置和全局键位
+- `_`：在当前窗口打开当前文件的父目录
+- `<leader>fe`：切换 Oil 浮动文件浏览器
+- 默认显示隐藏文件，适合当前 dotfiles 仓库
+- 不启用 icon 列，继续保持当前不依赖 `nvim-web-devicons` 的约束
+- 为避免覆盖现有窗口跳转，Oil 里的分屏选择改为 `<C-s>` 水平分屏、`<C-v>` 垂直分屏
 
 ## 工具安装
 
@@ -76,10 +101,21 @@ LSP server 交给 Mason 管理。当前配置会通过 `mason-lspconfig.nvim`
 Tree-sitter 解析器请按需在 Neovim 内执行：
 
 ```vim
-:TSInstall lua vim vimdoc query markdown markdown_inline bash python rust
+:TSInstallConfigured
 ```
 
+- `lua/plugins/nvim_treesitter.lua` 已迁移到 `nvim-treesitter` 0.12+ 新接口
+- 通过 `FileType` autocmd 按需启用 Tree-sitter 高亮和缩进，并为大于 `1 MB` 的文件增加跳过保护
+- `gnn` / `grn` / `grc` / `grm` 这组结构化选择按键现在由仓库内的 Lua 代码维护，不再依赖旧版 `incremental_selection` 配置项
+
+## Buffer 切换
+
+- `<M-h>`：切到上一个 buffer
+- `<M-l>`：切到下一个 buffer
+- `<leader>bp`：选择 buffer
 ## Keymap Cheatsheet
+
+当前这份 README 已按 `nvim-treesitter` 0.12+ 更新：`gnn` / `grn` / `grc` / `grm` 来自 `lua/plugins/nvim_treesitter.lua` 里的仓库内实现，而不是旧版插件配置项。
 
 当前配置会把仓库内定义的按键映射按模块登记到 cheatsheet 中，包括 `core`、各插件模块，以及
 `blink.cmp` 默认 preset、Tree-sitter incremental selection 这类不是直接通过 `vim.keymap.set`

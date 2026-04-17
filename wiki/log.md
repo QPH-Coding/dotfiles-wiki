@@ -3,7 +3,112 @@
 记录 wiki 的创建、更新和维护操作。
 
 ---
+## [2026-04-16] Refactor | 脚本切换到 uv 与 TOML 配置
 
+- **操作**：refactor
+- **涉及文件**：
+  - scripts/deploy.py
+  - scripts/sync_docs.py
+  - scripts/targets.toml
+  - raw/manifest.toml
+  - scripts/targets.json (已删除)
+  - raw/manifest.json (已删除)
+  - dotfiles/README.md
+  - AGENTS.md
+  - CLAUDE.md
+  - wiki/log.md
+- **摘要**：为两个 Python 脚本加入 `uv run --script` 与 `requires-python >= 3.12` 元数据，将部署和文档来源配置从 JSON 迁移到 TOML，并改为使用 `tomllib` 解析，仓库中的命令示例同步切换到 `uv run`
+
+---
+## [2026-04-16] Update | 调整 Neovim 快捷键
+
+- **操作**：update
+- **涉及文件**：
+  - dotfiles/nvim/lua/plugins/bufferline.lua
+  - dotfiles/nvim/lua/core/terminal.lua
+  - dotfiles/nvim/README.md
+  - wiki/my-config/overview.md
+  - wiki/log.md
+- **摘要**：将 buffer 切换改为 `<M-h>` / `<M-l>`，并将 terminal 模式下的 terminal tab 切换同步改为同一组按键；同时恢复 `<leader>th`、`<leader>tl`、`<leader>tb` 这组 terminal leader 映射
+
+---
+## [2026-04-16] Refactor | 迁移 nvim-treesitter 到 0.12+ 配置接口
+- **操作**：refactor
+- **涉及文件**：
+  - dotfiles/nvim/lua/plugins/nvim_treesitter.lua
+  - dotfiles/nvim/README.md
+  - wiki/log.md
+- **摘要**：将旧版 `setup({ highlight/indent/incremental_selection })` 配置迁移到 `nvim-treesitter` 0.12+ 新接口，改为按 `FileType` 启用高亮与缩进、为大文件增加跳过保护，并保留 `gnn` / `grn` / `grc` / `grm` 这组结构化选择按键
+
+---
+## [2026-04-16] Sync | 添加 oil.nvim 文档来源
+
+- **操作**：sync
+- **涉及文件**：
+  - raw/manifest.json
+  - raw/doc/neovim/plugin/oil-nvim/
+  - wiki/log.md
+- **摘要**：新增 `stevearc/oil.nvim` 的 `doc/` 文档源并完成本地同步，继续遵守“先拉文档，再接入配置”的仓库流程
+
+---
+## [2026-04-16] Config | 接入 oil.nvim 文件浏览器
+
+- **操作**：config
+- **涉及文件**：
+  - dotfiles/nvim/init.lua
+  - dotfiles/nvim/lua/plugins/oil.lua
+  - dotfiles/nvim/nvim-pack-lock.json
+  - dotfiles/nvim/README.md
+  - wiki/my-config/overview.md
+  - wiki/log.md
+- **摘要**：将 `stevearc/oil.nvim` 接入当前 Neovim 配置，使用 `_` 和 `<leader>fe` 作为入口，并调整 Oil 内部分屏键位以避开现有窗口导航映射
+
+---
+## [2026-04-16] Update | Alacritty 切换 Maple Mono NF CN 字体
+
+- **操作**：update
+- **涉及文件**：
+  - dotfiles/alacritty/alacritty.toml
+  - wiki/log.md
+- **摘要**：为 Alacritty 显式设置 `Maple Mono NF CN` 作为终端字体，和当前 Neovim / 终端环境中的 Nerd Font 字形需求保持一致
+
+---
+## [2026-04-16] Update | Alacritty 切换到 Everforest 主题
+
+- **操作**：update
+- **涉及文件**：
+  - dotfiles/alacritty/alacritty.toml
+  - wiki/log.md
+- **摘要**：将 Alacritty 的终端调色板切换为 Everforest dark medium，和当前 Neovim 中启用的 `everforest` 主题保持一致
+
+---
+## [2026-04-16] Sync | 添加 Everforest 文档来源
+
+- **操作**：sync
+- **涉及文件**：
+  - raw/manifest.json
+  - raw/doc/neovim/plugin/everforest/
+  - wiki/log.md
+- **摘要**：新增 `sainnhe/everforest` 的 `doc/` 文档源，并纳入现有 `sync_docs.py` 文档同步流程，保持“先同步文档，再接入配置”的仓库约束
+
+---
+## [2026-04-16] Config | 接入 Everforest 主题插件
+
+- **操作**：config
+- **涉及文件**：
+  - dotfiles/nvim/init.lua
+  - dotfiles/nvim/lua/plugins/everforest.lua
+  - dotfiles/nvim/lua/plugins/lualine.lua
+  - dotfiles/nvim/nvim-pack-lock.json
+  - dotfiles/nvim/README.md
+  - wiki/tools/everforest.md
+  - wiki/tools/neovim.md
+  - wiki/my-config/overview.md
+  - wiki/index.md
+  - wiki/log.md
+- **摘要**：将 `sainnhe/everforest` 作为当前 Neovim 配置的默认主题接入，补充 `lualine` 联动设置，并新增对应的 wiki 文档与索引入口
+
+---
 ## [2026-04-15] Config | 新增 Alacritty 配置模块
 
 - **操作**：config

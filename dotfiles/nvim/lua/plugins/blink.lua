@@ -1,4 +1,30 @@
 local keymaps = require("core.keymaps")
+local uv = vim.uv or vim.loop
+
+local function is_completion_buffer(bufnr)
+  if vim.bo[bufnr].buftype ~= "" then
+    return false
+  end
+
+  local name = vim.api.nvim_buf_get_name(bufnr)
+  if name == "" then
+    return true
+  end
+
+  local stat = uv.fs_stat(name)
+
+  return not stat or stat.size <= 256 * 1024
+end
+
+local function visible_completion_buffers()
+  return vim
+    .iter(vim.api.nvim_list_wins())
+    :map(function(win)
+      return vim.api.nvim_win_get_buf(win)
+    end)
+    :filter(is_completion_buffer)
+    :totable()
+end
 
 require("blink.cmp").setup({
   keymap = { preset = "default" },
@@ -6,10 +32,36 @@ require("blink.cmp").setup({
     nerd_font_variant = "mono",
   },
   completion = {
-    documentation = { auto_show = false },
+    documentation = {
+      auto_show = false,
+      treesitter_highlighting = false,
+    },
+    trigger = {
+      prefetch_on_insert = false,
+    },
+  },
+  signature = {
+    window = {
+      treesitter_highlighting = false,
+    },
   },
   sources = {
     default = { "lsp", "path", "buffer" },
+    providers = {
+      path = {
+        opts = {
+          max_entries = 1000,
+        },
+      },
+      buffer = {
+        opts = {
+          get_bufnrs = visible_completion_buffers,
+          max_sync_buffer_size = 10000,
+          max_async_buffer_size = 100000,
+          max_total_buffer_size = 200000,
+        },
+      },
+    },
   },
   fuzzy = {
     implementation = "lua",

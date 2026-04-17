@@ -4,7 +4,7 @@ name: Neovim
 category: editor
 repo: neovim/neovim
 sources: ["raw/doc/neovim/doc/nvim.txt", "raw/doc/neovim/doc/lua-guide.txt", "raw/doc/neovim/doc/options.txt"]
-last-updated: 2026-04-14
+last-updated: 2026-04-16
 ---
 
 # Neovim
@@ -104,6 +104,7 @@ vim.keymap.set('n', '<leader>fg', '<cmd>FzfLua live_grep<CR>')
 - **LSP**：语言服务器协议支持
 - **fzf-lua**：模糊查找
 - **lualine.nvim**：状态栏展示
+- **Everforest**：当前仓库默认使用的配色主题，见 [[tools/everforest]]
 
 ## 已知问题 / 注意事项
 
@@ -114,5 +115,6 @@ vim.keymap.set('n', '<leader>fg', '<cmd>FzfLua live_grep<CR>')
 ## 参考
 
 - [[index]] 返回总目录
+- [[tools/everforest]] Everforest 主题插件
 - [[concepts/lsp-basics]] LSP 基础概念
 - [[concepts/lua-config]] Lua 配置指南

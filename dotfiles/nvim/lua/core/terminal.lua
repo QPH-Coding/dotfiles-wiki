@@ -328,6 +328,21 @@ local function ensure_panel()
   end)
 end
 
+local function close_panel_windows()
+  local terminal_state = state()
+  local tab_winid = terminal_state.tab_winid
+  local term_winid = terminal_state.term_winid
+
+  terminal_state.tab_winid = nil
+  terminal_state.term_winid = nil
+
+  for _, winid in ipairs({ tab_winid, term_winid }) do
+    if is_valid_win(winid) then
+      pcall(vim.api.nvim_win_close, winid, true)
+    end
+  end
+end
+
 local function set_terminal_buffer(bufnr, opts)
   opts = opts or {}
 
@@ -424,7 +439,11 @@ local function create_terminal_buffer()
   })
 
   vim.api.nvim_set_current_win(float_winid)
-  vim.cmd("terminal")
+  if vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1 then
+    vim.cmd("terminal powershell.exe")
+  else
+    vim.cmd("terminal")
+  end
 
   local bufnr = vim.api.nvim_get_current_buf()
 
@@ -521,8 +540,51 @@ function M.cycle(step)
   M.select(target)
 end
 
+function M.close_current()
+  local terminal_state = state()
+  cleanup_buffers()
+
+  local target = terminal_state.current
+  local current_bufnr = vim.api.nvim_get_current_buf()
+  if is_managed_terminal(current_bufnr) then
+    target = current_bufnr
+  end
+
+  if not is_managed_terminal(target) then
+    vim.notify("No managed terminal to close", vim.log.levels.WARN)
+    return
+  end
+
+  local target_index = #terminal_state.buffers
+  for index, bufnr in ipairs(terminal_state.buffers) do
+    if bufnr == target then
+      target_index = index
+      break
+    end
+  end
+
+  with_redirect_suspended(function()
+    pcall(vim.api.nvim_buf_delete, target, { force = true })
+  end)
+
+  cleanup_buffers()
+
+  if #terminal_state.buffers == 0 then
+    with_redirect_suspended(close_panel_windows)
+    M.focus_buffer()
+    return
+  end
+
+  local next_index = math.min(target_index, #terminal_state.buffers)
+  local enter_insert = vim.api.nvim_get_mode().mode:sub(1, 1) == "t"
+  set_terminal_buffer(terminal_state.buffers[next_index], { enter_insert = enter_insert })
+end
+
 function M.setup()
   map("t", "<Esc><Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+  map("t", "<M-t>", function()
+    M.new()
+  end, { desc = "New terminal tab" })
   map("t", "<M-h>", function()
     M.cycle(-1)
   end, { desc = "Previous terminal tab" })
@@ -532,6 +594,9 @@ function M.setup()
   map("t", "<M-b>", function()
     M.focus_buffer()
   end, { desc = "Focus workspace buffer" })
+  map("t", "<M-d>", function()
+    M.close_current()
+  end, { desc = "Delete current terminal tab" })
 
   map("n", "<M-t>", function()
     M.open()
@@ -606,6 +671,9 @@ function M.setup()
       if is_terminal_buffer(event.buf) then
         register_terminal(event.buf)
         apply_terminal_style(winid)
+        if vim.api.nvim_get_mode().mode:sub(1, 1) ~= "t" then
+          vim.cmd("startinsert")
+        end
         return
       end
 

@@ -48,6 +48,5 @@ opt.sessionoptions = {
   "help",
   "skiprtp",
   "tabpages",
-  "terminal",
   "winsize",
 }

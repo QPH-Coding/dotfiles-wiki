@@ -11,7 +11,15 @@ map({ "n", "v" }, "L", "$", { desc = "Line end" })
 
 map("n", "<leader>w", "<cmd>write<CR>", { desc = "Write buffer" })
 map("n", "<leader>q", "<cmd>quit<CR>", { desc = "Quit window" })
-map("n", "<leader>bd", "<cmd>bdelete<CR>", { desc = "Delete buffer" })
+map("n", "<M-d>", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  if vim.bo[bufnr].buftype == "terminal" and vim.b[bufnr].terminal_panel_managed == true then
+    require("core.terminal").close_current()
+    return
+  end
+
+  vim.cmd("bdelete")
+end, { desc = "Delete current buffer or terminal" })
 map("n", "<leader>yp", function()
   local path = vim.fn.expand("%:p")
   if path == "" then

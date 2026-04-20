@@ -1,8 +1,12 @@
 local map = require("core.keymaps").mapper("Persistence")
+local session_options = vim.tbl_filter(function(option)
+  return option ~= "terminal"
+end, vim.opt.sessionoptions:get())
 
 require("persistence").setup({
   need = 1,
   branch = true,
+  options = session_options,
 })
 
 map("n", "<leader>qs", function()
